@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong's Premium Dayok — Price Quotation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #0a3d62;
+    --teal: #0e7c7b;
+    --gold: #f0a500;
+    --cream: #fdf6e3;
+    --sand: #e8d5b0;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #2b2b2b;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(50,50,50,0.8) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(240,165,0,0.07) 0%, transparent 50%),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.01) 40px,
+        rgba(255,255,255,0.01) 80px
+      );
+    pointer-events: none;
+  }
+
+  .card {
+    background: var(--cream);
+    border-radius: 24px;
+    max-width: 580px;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(240,165,0,0.2);
+    animation: rise 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 60%, #383838 100%);
+    padding: 36px 36px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '🐟';
+    position: absolute;
+    right: -10px; bottom: -20px;
+    font-size: 120px;
+    opacity: 0.07;
+    transform: scaleX(-1);
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #1a1a1a;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .header h1 span { color: var(--gold); }
+
+  .header p {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  .body { padding: 32px 36px; }
+
+  /* Tier Cards — 4 columns */
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .tier {
+    background: white;
+    border: 2px solid #e8e0d0;
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .tier:hover { border-color: var(--teal); transform: translateY(-2px); }
+
+  .tier.active {
+    border-color: var(--teal);
+    background: linear-gradient(135deg, #e8f6f5, #f0faf9);
+    box-shadow: 0 4px 16px rgba(14,124,123,0.2);
+  }
+
+  .tier-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 4px;
+  }
+
+  .tier.active .tier-label { color: var(--teal); }
+
+  .tier-boxes {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ocean);
+    line-height: 1.3;
+  }
+
+  .tier-price {
+    font-size: 11px;
+    color: #666;
+    margin-top: 3px;
+  }
+
+  .tier.active .tier-price { color: var(--teal); font-weight: 600; }
+
+  .tier-best {
+    position: absolute;
+    top: -8px; left: 50%; transform: translateX(-50%);
+    background: var(--gold);
+    color: #1a1a1a;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  /* Controls */
+  .control-group { margin-bottom: 22px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 2px solid #e0d8c8;
+    border-radius: 14px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .qty-btn {
+    width: 52px; height: 52px;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--ocean);
+    font-weight: 300;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .qty-btn:hover { background: #f0e8d8; }
+
+  .qty-display {
+    width: 80px;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ocean);
+    border: none;
+    border-left: 2px solid #e0d8c8;
+    border-right: 2px solid #e0d8c8;
+    background: transparent;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .qty-display::-webkit-outer-spin-button,
+  .qty-display::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .qty-note {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Show/hide wrappers */
+  .pcs-wrap  { display: none; }
+  .pcs-wrap.show { display: block; }
+  .box-wrap  { display: block; }
+  .box-wrap.hide { display: none; }
+
+  /* Price Breakdown */
+  .breakdown {
+    background: linear-gradient(135deg, #252525, #1a1a1a);
+    border-radius: 16px;
+    padding: 24px;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .breakdown::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(240,165,0,0.1);
+    border-radius: 50%;
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .breakdown-row:last-child { border-bottom: none; }
+
+  .breakdown-row.total {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 2px solid rgba(240,165,0,0.5);
+    border-bottom: none;
+  }
+
+  .breakdown-row.total .label-col {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: white;
+    font-weight: 700;
+  }
+
+  .breakdown-row.total .value-col {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+    font-weight: 900;
+  }
+
+  .tier-tag {
+    display: inline-block;
+    background: rgba(240,165,0,0.2);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(240,165,0,0.4);
+  }
+
+  /* Copy Button */
+  .copy-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--teal), #0a9b9a);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,124,123,0.4); }
+  .copy-btn:active { transform: translateY(0); }
+  .copy-btn.copied { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+  /* Message Preview */
+  .msg-preview {
+    background: #f0f0f0;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.7;
+    margin-top: 16px;
+    border: 1px solid #ddd;
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .msg-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+
+  .savings-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(39,174,96,0.15);
+    color: #27ae60;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(39,174,96,0.3);
+    margin-top: 6px;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e0d8c8, transparent);
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="badge">🎣 GenSan's Finest</div>
+    <h1>Pong's Premium <span>Dayok</span></h1>
+    <p>Spicy · Fermented Tuna Paste · 350 ml · Ready for Serving</p>
+  </div>
+
+  <div class="body">
+
+    <!-- 4 Tier Selector -->
+    <div class="tiers">
+      <div class="tier" id="tier0" onclick="selectTier(0)">
+        <div class="tier-label">Retail</div>
+        <div class="tier-boxes">Solo</div>
+        <div class="tier-price">₱95 / pc</div>
+      </div>
+      <div class="tier" id="tier1" onclick="selectTier(1)">
+        <div class="tier-label">Starter</div>
+        <div class="tier-boxes">1 Box</div>
+        <div class="tier-price">₱45 / pc</div>
+      </div>
+      <div class="tier active" id="tier2" onclick="selectTier(2)">
+        <div class="tier-best">POPULAR</div>
+        <div class="tier-label">Package 1</div>
+        <div class="tier-boxes">2–9 Boxes</div>
+        <div class="tier-price">₱42 / pc</div>
+      </div>
+      <div class="tier" id="tier3" onclick="selectTier(3)">
+        <div class="tier-label">Package 2</div>
+        <div class="tier-boxes">10+ Boxes</div>
+        <div class="tier-price">₱40 / pc</div>
+      </div>
+    </div>
+
+    <!-- Retail: piece input -->
+    <div class="pcs-wrap" id="pcsWrap">
+      <div class="control-group">
+        <label>Number of Pieces</label>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changePcs(-1)">−</button>
+          <input type="number" class="qty-display" id="pcsInput" value="1" min="1" oninput="onPcsInput(this.value)">
+          <button class="qty-btn" onclick="changePcs(1)">+</button>
+        </div>
+        <div class="qty-note">Retail — individual pieces</div>
+      </div>
+    </div>
+
+    <!-- Box input (Starter / Package 1 / Package 2) -->
+    <div class="box-wrap" id="boxWrap">
+      <div class="control-group">
+        <label>Number of Boxes</label>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input type="number" class="qty-display" id="qtyInput" value="6" min="1" max="50" oninput="onManualInput(this.value)">
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <div class="qty-note">Each box = 54 pieces of Dayok</div>
+      </div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="breakdown">
+      <div class="breakdown-row" id="rowPcsPerBox">
+        <span class="label-col">Pieces per Box</span>
+        <span class="value-col">54 pcs</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="label-col">Total Pieces</span>
+        <span class="value-col" id="totalPcs">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="label-col">Price Tier</span>
+        <span class="value-col"><span class="tier-tag" id="tierTag">—</span></span>
+      </div>
+      <div class="breakdown-row">
+        <span class="label-col">Price per Piece</span>
+        <span class="value-col" id="pricePerPc">—</span>
+      </div>
+      <div class="breakdown-row" id="rowPricePerBox">
+        <span class="label-col">Price per Box</span>
+        <span class="value-col" id="pricePerBox">—</span>
+      </div>
+      <div class="breakdown-row total">
+        <span class="label-col">TOTAL</span>
+        <span class="value-col" id="grandTotal">—</span>
+      </div>
+    </div>
+
+    <div id="savingsArea"></div>
+
+    <div class="divider"></div>
+
+    <!-- FB Message -->
+    <div class="msg-label">📋 Ready-to-Send FB Message</div>
+    <div class="msg-preview" id="msgPreview">Loading...</div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyMessage()">
+      <span>📋</span> Copy Message
+    </button>
+
+  </div>
+</div>
+
+<script>
+  const PCS_PER_BOX = 54;
+  let activeTier = 2; // default Package 1
+
+  const TIER_INFO = {
+    0: { label: 'Retail',               rate: 95, tierName: 'Retail (Solo)',           isRetail: true  },
+    1: { label: 'Starter',              rate: 45, tierName: 'Starter (1 Box)',        isRetail: false },
+    2: { label: 'Package 1',            rate: 42, tierName: 'Package 1 (2–9 Boxes)', isRetail: false },
+    3: { label: 'Package 2',            rate: 40, tierName: 'Package 2 (10+ Boxes)', isRetail: false },
+  };
+
+  function getBoxTier(boxes) {
+    if (boxes >= 10) return TIER_INFO[3];
+    if (boxes >= 2)  return TIER_INFO[2];
+    return TIER_INFO[1];
+  }
+
+  function fmt(n) { return '₱' + n.toLocaleString('en-PH'); }
+
+  function render() {
+    const isRetail = activeTier === 0;
+
+    // Toggle inputs
+    document.getElementById('pcsWrap').classList.toggle('show', isRetail);
+    document.getElementById('boxWrap').classList.toggle('hide', isRetail);
+
+    // Toggle breakdown rows
+    document.getElementById('rowPcsPerBox').style.display  = isRetail ? 'none' : '';
+    document.getElementById('rowPricePerBox').style.display = isRetail ? 'none' : '';
+
+    let tier, totalPcs, pricePerBox, grandTotal, highlightTier;
+
+    if (isRetail) {
+      const pcs = Math.max(1, parseInt(document.getElementById('pcsInput').value) || 1);
+      document.getElementById('pcsInput').value = pcs;
+      tier = TIER_INFO[0];
+      totalPcs = pcs;
+      grandTotal = tier.rate * pcs;
+      highlightTier = 0;
+    } else {
+      const boxes = Math.max(1, parseInt(document.getElementById('qtyInput').value) || 1);
+      document.getElementById('qtyInput').value = boxes;
+      tier = getBoxTier(boxes);
+      totalPcs = boxes * PCS_PER_BOX;
+      pricePerBox = tier.rate * PCS_PER_BOX;
+      grandTotal = pricePerBox * boxes;
+      highlightTier = tier === TIER_INFO[1] ? 1 : tier === TIER_INFO[2] ? 2 : 3;
+      document.getElementById('pricePerBox').textContent = fmt(pricePerBox) + '/box';
+
+      // Update activeTier to match auto-detected tier from box count
+      activeTier = highlightTier;
+    }
+
+    document.getElementById('totalPcs').textContent   = totalPcs.toLocaleString() + ' pcs';
+    document.getElementById('tierTag').textContent    = tier.tierName;
+    document.getElementById('pricePerPc').textContent = fmt(tier.rate) + '/pc';
+    document.getElementById('grandTotal').textContent = fmt(grandTotal);
+
+    // Highlight tier cards
+    [0,1,2,3].forEach(n => document.getElementById('tier'+n).classList.remove('active'));
+    document.getElementById('tier' + highlightTier).classList.add('active');
+
+    // Savings vs retail
+    const savingsArea = document.getElementById('savingsArea');
+    if (!isRetail) {
+      const savings = (95 - tier.rate) * totalPcs;
+      savingsArea.innerHTML = `<div class="savings-badge">✅ You save ${fmt(savings)} vs retail price!</div>`;
+    } else {
+      savingsArea.innerHTML = '';
+    }
+
+    // FB message
+    document.getElementById('msgPreview').textContent = isRetail
+      ? msgRetail(totalPcs, tier.rate, grandTotal)
+      : msgBox(parseInt(document.getElementById('qtyInput').value), tier, totalPcs, pricePerBox, grandTotal);
+  }
+
+  function msgRetail(pcs, rate, total) {
+    return `Salamat sa inyong inquiry sa Pong's Premium Dayok! 🐟
+
+Narito ang inyong price quotation:
+
+🛒 Order Details:
+• ${pcs} piece${pcs > 1 ? 's' : ''} (Retail)
+• Price per piece: ₱${rate}.00
+
+💰 TOTAL: ₱${total.toLocaleString()}.00
+
+🎣 Product: Pong's Premium Dayok
+   (Spicy Fermented Tuna Paste, 350ml, GenSan)
+
+Para mag-order o may katanungan, reply lang dito! 😊
+— Pong's Premium Dayok`;
+  }
+
+  function msgBox(boxes, tier, totalPcs, pricePerBox, grandTotal) {
+    return `Salamat sa inyong inquiry sa Pong's Premium Dayok! 🐟
+
+Narito ang inyong price quotation:
+
+📦 Order Details:
+• ${boxes} box${boxes > 1 ? 'es' : ''} × 54 pcs = ${totalPcs.toLocaleString()} pcs
+• Price Tier: ${tier.tierName}
+• Price per piece: ₱${tier.rate}.00
+• Price per box: ₱${pricePerBox.toLocaleString()}.00
+
+💰 TOTAL: ₱${grandTotal.toLocaleString()}.00
+
+🎣 Product: Pong's Premium Dayok
+   (Spicy Fermented Tuna Paste, 350ml, GenSan)
+
+Para mag-order o may katanungan, reply lang dito! 😊
+— Pong's Premium Dayok`;
+  }
+
+  function changeQty(d) {
+    const inp = document.getElementById('qtyInput');
+    inp.value = Math.max(1, (parseInt(inp.value)||1) + d);
+    render();
+  }
+
+  function onManualInput(v) {
+    if (!isNaN(parseInt(v)) && parseInt(v) >= 1) render();
+  }
+
+  function changePcs(d) {
+    const inp = document.getElementById('pcsInput');
+    inp.value = Math.max(1, (parseInt(inp.value)||1) + d);
+    render();
+  }
+
+  function onPcsInput(v) {
+    if (!isNaN(parseInt(v)) && parseInt(v) >= 1) render();
+  }
+
+  function selectTier(t) {
+    activeTier = t;
+    if (t === 0) {
+      document.getElementById('pcsInput').value = 1;
+    } else {
+      const defaults = [null, 1, 3, 10];
+      document.getElementById('qtyInput').value = defaults[t];
+    }
+    render();
+  }
+
+  function copyMessage() {
+    const text = document.getElementById('msgPreview').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.classList.add('copied');
+      btn.innerHTML = '<span>✅</span> Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<span>📋</span> Copy Message';
+      }, 2000);
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>
